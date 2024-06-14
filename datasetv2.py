@@ -1,3 +1,8 @@
+# Setup for spacy
+# pip install spacy
+# python -m spacy download de_core_news_sm
+# python -m spacy download en_core_web_sm
+
 import torch
 from torch.utils.data.dataset import Dataset
 from torch.utils.data.dataloader import DataLoader

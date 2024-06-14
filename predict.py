@@ -5,7 +5,7 @@ from torchtext.data.utils import get_tokenizer
 from typing import Union
 from model import Transformer
 from config import config
-from dataset import Multi30kDe2En
+from datasetv2 import DeEnDataset
 
 
 def translate_sentence(sentence: Union[list, str], model: Transformer, src_vocab: Vocab, trg_vocab: Vocab, max_len=50,
@@ -47,13 +47,13 @@ def translate_sentence(sentence: Union[list, str], model: Transformer, src_vocab
 
 
 if __name__ == '__main__':
-    dataset = Multi30kDe2En('train')
+    dataset = DeEnDataset('data.json', 'train')
     de_vocab = dataset.de_vocab
     en_vocab = dataset.en_vocab
     config['src_vocab_size'] = len(dataset.de_vocab)
     config['trg_vocab_size'] = len(dataset.en_vocab)
-    config['src_pad_idx'] = Multi30kDe2En.PAD_IDX
-    config['trg_pad_idx'] = Multi30kDe2En.PAD_IDX
+    config['src_pad_idx'] = DeEnDataset.PAD_IDX
+    config['trg_pad_idx'] = DeEnDataset.PAD_IDX
     src_vocab_size = config['src_vocab_size']
     trg_vocab_size = config['trg_vocab_size']
     ff_hid_dim = config['ff_hid_dim']
@@ -67,7 +67,7 @@ if __name__ == '__main__':
     trg_pad_idx = config['trg_pad_idx']
     lr = config['lr']
     clip = config['clip']
-    weights_path = 'weights/transformer.pt'
+    # weights_path = 'weights/transformer.pt'
 
     model = Transformer(src_vocab_size,
                         trg_vocab_size,
@@ -81,10 +81,13 @@ if __name__ == '__main__':
                         dropout,
                         device)
     model.to(device)
-    model.load_state_dict(torch.load(weights_path, map_location=device))
 
-    sentence = 'Eine Gruppe von Menschen steht vor einem Iglu'
+    for i in range(1, 11):
+        weights_path = f'weights/{i}.pt'
+        model.load_state_dict(torch.load(weights_path, map_location=device))
 
-    output = translate_sentence(sentence, model, de_vocab, en_vocab, device=device)
-    print(f'Translation: {" ".join(output)}'.replace('<bos>', '').replace('<eos', ''))
+        sentence = 'Eine Gruppe von Menschen steht vor einem Iglu'
+
+        output = translate_sentence(sentence, model, de_vocab, en_vocab, device=device)
+        print(f'Translation [{i}]: {" ".join(output)}'.replace('<bos>', '').replace('<eos', ''))
 

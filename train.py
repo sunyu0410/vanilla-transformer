@@ -11,7 +11,7 @@ import random
 from model import Transformer
 from utils import AverageMeter
 from config import config
-from dataset import Multi30kDe2En
+from datasetv2 import DeEnDataset
 
 SEED = 42
 random.seed(SEED)
@@ -133,21 +133,21 @@ class Trainer:
 if __name__ == '__main__':
     batch_size = config['train_batch_size']
 
-    train_dataset = Multi30kDe2En('train')
-    valid_dataset = Multi30kDe2En('valid')
+    train_dataset = DeEnDataset('data.json', 'train')
+    valid_dataset = DeEnDataset('data.json', 'val')
 
     train_loader = DataLoader(train_dataset,
                               batch_size=batch_size,
                               shuffle=True,
-                              collate_fn=Multi30kDe2En.collate_fn)
+                              collate_fn=DeEnDataset.collate_fn)
     valid_loader = DataLoader(valid_dataset,
                               batch_size=batch_size,
                               shuffle=True,
-                              collate_fn=Multi30kDe2En.collate_fn)
+                              collate_fn=DeEnDataset.collate_fn)
 
     config['src_vocab_size'] = len(train_dataset.de_vocab)
     config['trg_vocab_size'] = len(train_dataset.en_vocab)
-    config['src_pad_idx'] = Multi30kDe2En.PAD_IDX
-    config['trg_pad_idx'] = Multi30kDe2En.PAD_IDX
+    config['src_pad_idx'] = DeEnDataset.PAD_IDX
+    config['trg_pad_idx'] = DeEnDataset.PAD_IDX
     trainer = Trainer(config)
     trainer.fit(train_loader, valid_loader, config['epochs'])

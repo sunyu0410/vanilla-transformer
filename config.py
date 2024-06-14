@@ -6,7 +6,7 @@ config = {
     'ff_hid_dim': 512,
     'dropout': 0.1,
     'max_length': 100,
-    'device': 'cuda',
+    'device': 'cpu', #'cuda',
     'lr': 0.0005,
     'clip': 1,
     'log_dir': 'logs',
